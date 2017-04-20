@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ page_data.NAME }} Newsletter</title>
+</head>
+<body style="font-size: 16px; line-height: 1.5em;padding: 0px; margin: 0px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif">
+
+<div>
+
+    <div style="text-align: center; height: 160px;"><img src="" style="height: 160px;"/></div>
+
+    <div style="max-width: 600px; margin-left: auto; margin-right: auto;">
+        <br>
+        <div>
+            <h2>{{ page_data.NAME }}'s newsletter, {{ page_data.DATE }}</h2>
+            <blockquote>{{ page_data.WEBSITE_DESCRIPTION }}</blockquote>
+        </div>
+        <hr>
+        <br>
+        <div>
+            <h3>Your upcoming Meetups</h3>
+            {% for i in meetup_data %}
+                <h4>{{ i.date }}</h4>
+                <ul style="list-style-type:disc">
+                  <li>{{ i.group_name }}: <a href="{{ i.link }}">{{ i.event_name }}</a>
+                  </li>
+                </ul>
+            {% endfor %}
+        </div>
+        <br>
+        <div>
+            <h3>Cool and interesting bookmarks</h3>
+            <hr>
+            {% for k, v in bookmark_data.items() %}
+{#                {% if key|reject("date", "twitter_handle", "name")|reject("date", "twitter_handle", "name") %}#}
+                    <a href="{{ v[1] }}"><h4>{{ k }}</h4></a>
+                    <ul style="list-style-type:disc">
+                      <li>{{ v[0] }}</li>
+                    </ul>
+                    <hr>
+{#                {% endif %}#}
+            {% endfor %}
+        </div>
+        <br>
+        <br>
+        <div>
+            Thanks for reading!
+        </div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="" style="font-weight: bold; text-decoration: none; display: inline-block; padding: 6px 12px;margin-bottom: 0px;font-size: 14px;line-height: 1.42857;text-align: center;white-space: nowrap;vertical-align: middle;cursor: pointer;-moz-user-select: none;border-radius: 4px;color: #FFF;background: #5CB85C none;border-color: #4CAE4C;">A button to your site!</a>
+        </div>
+        <br>
+        <br>
+        <div>
+            <div style="float: right; font-size: 14px; font-weight: bold; color: #666; text-align: center; line-height: 1.2em;">
+
+                <a href="https://twitter.com/{{ page_data.TWITTER_HANDLE }}"
+                   style="color: #666; text-decoration: none;"><img
+                        src=""
+                        style="height: 90px; border-radius: 5px;"/>
+                </a>
+                <div><a href="https://twitter.com/{{ page_data.TWITTER_HANDLE }}"
+                        style="color: #666; text-decoration: none;">{{ page_data.NAME }}</a>
+                </div>
+{#                <div><a href=""#}
+{#                        style="color: #666; text-decoration: none;"></a>#}
+{#                </div>#}
+            </div>
+
+            <div>
+                Did we miss something? Or have a question?<br>
+                We invite you to ask anything you’d like to hear answered.<br>
+                Tweet us at <a href="https://twitter.com/{{ page_data.TWITTER_HANDLE }}">@{{ page_data.TWITTER_HANDLE }}</a>
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
