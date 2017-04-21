@@ -11,17 +11,16 @@ As an attempt to remedy this first-world problem, I thought I'd create my own ne
 
 Setup
 -----
-::
-
+```
 $ git clone https://github.com/cheevahagadog/barker.git
-
+```
 
 Scripts were written using Python 3.6 and have not been tested for portability to Python 2.
 I'd recommend creating a virtual environment
-```conda create -n venv python=3```
-or 
-```virtualenv venv```
-```$ pip install -r requirements.txt```
+```
+conda create -n venv python=3 or virtualenv venv
+$ pip install -r requirements.txt
+```
 
 Using Barker
 ------------
