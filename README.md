@@ -11,8 +11,11 @@ As an attempt to remedy this first-world problem, I thought I'd create my own ne
 
 Setup
 -----
-Clone the repository
-```git clone https://github.com/cheevahagadog/barker.git```
+::
+
+$ git clone https://github.com/cheevahagadog/barker.git
+
+
 Scripts were written using Python 3.6 and have not been tested for portability to Python 2.
 I'd recommend creating a virtual environment
 ```conda create -n venv python=3```
