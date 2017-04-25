@@ -19,15 +19,16 @@ PERSONAL_DATA = {
 
 # ---- BOOKMARK SETTINGS ------ #
 EXCLUDE_FOLDERS = ['Personal', 'Projects', 'Mealio', 'FrontAnalytics', "Dependency hell!", "PC Automation w/ R"]
+FOCUS_RECENT = False
 TOP_FOCUS_FOLDERS = ['Data Science', 'Review']
 SUB_FOCUS_FOLDERS = ['Great Blogs']
 NUM_LINKS_TO_INCLUDE = 7
 URL_STEMS_TO_EXCLUDE = ['http://stackoverflow.com', "https://docs.google"]
-SEARCH_RECENT = False
 
 
 # ---- MEETUP SETTINGS ------ #
 MEETUP_API_KEY = os.environ.get("MEETUP_API_KEY", None)
+STATE = "UT"
 DO_NOT_INCLUDE_GROUPS = []
 
 
