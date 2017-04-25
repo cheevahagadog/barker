@@ -18,6 +18,7 @@
         </div>
         <hr>
         <br>
+        {% if meetup_data %}
         <div>
             <h3>Your upcoming Meetups</h3>
             {% for i in meetup_data %}
@@ -28,6 +29,7 @@
                 </ul>
             {% endfor %}
         </div>
+        {% endif %}
         <br>
         <div>
             <h3>Cool and interesting bookmarks</h3>
