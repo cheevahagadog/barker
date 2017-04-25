@@ -1,3 +1,6 @@
+# -*- coding:utf-8 -*-
+"""Helper classes for db access and for creating the newsletter"""
+
 from sqlalchemy import create_engine
 import config
 import pandas as pd
@@ -6,7 +9,8 @@ from bs4 import BeautifulSoup as bs
 from textblob import TextBlob
 from gensim.summarization import summarize
 import datetime
-import os, json
+import os
+import json
 from os.path import expanduser
 
 
@@ -15,12 +19,15 @@ class DataBaseInterface(object):
         self.engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
 
     def load_data_from_table(self, table_name=None, where_statement=None):
-        """
-        Loads all data (or data matching where statement) from the database and
+        """Loads all data (or data matching where statement) from the database and
         returns a pandas dataframe
-        :param table_name:
-        :param where_statement:
-        :return: Pandas Dataframe
+        
+        Args:
+            table_name: name of table in SQLite db
+            where_statement: SQL where statement query option
+            
+        Return:
+            Pandas Dataframe
         """
         if not table_name:
             raise Exception("Missing table name.")
@@ -28,23 +35,42 @@ class DataBaseInterface(object):
         if not where_statement:
             where_statement = ""
 
-        # Fetch data from SQL table and return as pandas dataframe
-        df = pd.read_sql_query("SELECT * FROM " + table_name + " " + where_statement,
-                               con=self.engine)
+        df = pd.read_sql_query("SELECT * FROM " + table_name + " " + where_statement, con=self.engine)
         return df
 
     def save_data(self, df, table_name=None, replace_or_append='replace'):
+        """Save a pandas dataframe into a SQLite table
+        
+        Args:
+            df: Pandas dataframe to save to table
+            table_name: str, name of table in SQLite db
+            replace_or_append: str, option on how to save the new data, default=replace
+            
+        Return:
+            None
+        """
         if not table_name:
             raise Exception("Missing table name.")
 
-        df.to_sql(name=table_name, con=self.engine,
-                  if_exists=replace_or_append, index=False)
-        return "Saved to {}".format(table_name)
+        df.to_sql(name=table_name, con=self.engine, if_exists=replace_or_append, index=False)
+        print("Saved to {}".format(table_name))
+        return None
 
 
-def get_page_summary(title, url):
+def get_page_summary(title, url, verbose=False) -> str:
+    """Request HTML of a bookmarked link and creates a summary to be used in the newsletter
+    
+    Args:
+        title: str, bookmark title as saved in your bookmarks
+        url: str, link in bookmark
+        verbose: bool, prints out helpful debugging feedback, default= False
+        
+    Returns:
+            Summary text of bookmarked link
+        """
     r = requests.get(url)
-    print('requesting web page data...')
+    if verbose:
+        print('requesting web page data...')
     if r.status_code == 200:
         soup = bs(r.text, "html5lib")
         for script in soup.find_all('script'):
@@ -59,23 +85,28 @@ def get_page_summary(title, url):
         tokenized_text = [str(sentence) for sentence in blob.sentences]
 
         if len(tokenized_text) == 1:
-            print("One sentence found for \t {}".format(title))
+            if verbose:
+                print("One sentence found for \t {}".format(title))
             return "  ".join(tokenized_text)
         elif not tokenized_text:
-            print("No text found for \t {}".format(title))
+            if verbose:
+                print("No text found for \t {}".format(title))
             return title
         elif len(tokenized_text) <= 5:
-            print("LTE 5 sentences found for \t {}".format(title))
+            if verbose:
+                print("LTE 5 sentences found for \t {}".format(title))
             return "  ".join(tokenized_text)
         else:
             try:
                 ntext = summarize("  ".join(tokenized_text), word_count=50)
-                print("summarizing text for \t {}...".format(title))
+                if verbose:
+                    print("summarizing text for \t {}...".format(title))
                 return ntext
             except:
                 return "  ".join(tokenized_text)[:150] + " ..."
     else:
-        print("bad request for \t {}".format(title))
+        if verbose:
+            print("bad request for \t {}".format(title))
         return title
 
 
@@ -91,9 +122,10 @@ def get_bookmarks():
                 data = json.load(data_file)
             try:
                 data = data['roots']['bookmark_bar']
-                return data
             except ValueError:
                 return "Do you have bookmarks on your bookmark bar?"
+            else:
+                return data
         else:
             return "File not found at location of {}".format(big_path)
     except:
@@ -101,9 +133,17 @@ def get_bookmarks():
 
 
 def get_file_time(dtms):
+    """Parses a Chrome bookmark timestamp to python datetime object
+    
+    Args:
+        dtms: str, chrome bookmark timestamp (i.e. 13114201346955574)
+        
+    Returns:
+        datetime.datetime representation of timestamp (i.e. datetime.datetime(2016, 7, 28, 17, 42, 26, 955574) )
+    """
     seconds, micros = divmod(int(dtms), 1000000)
     days, seconds = divmod(seconds, 86400)
-    return datetime.datetime(1601, 1, 1) + datetime.timedelta(days, seconds, micros) #.strftime('%m-%d-%Y %H:%M:%S %Z'))
+    return datetime.datetime(1601, 1, 1) + datetime.timedelta(days, seconds, micros)
 
 
 def transform_json_to_df(json_data):
@@ -114,30 +154,41 @@ def transform_json_to_df(json_data):
     return df
 
 
-def searcher(d, name=None, counter=0, g_name=None, skip=None):
-    """JSON bookmark flattening function that will exclude folder names supplied"""
+def searcher(dict_, folder_name=None, counter=0, parent_folder_name=None, skip=[]) -> list:
+    """recursive JSON bookmark flattening function that will exclude folder names supplied
+    
+    Args:
+        dict_: json /  dictionary containing all bookmarks
+        folder_name: the immediate parent folder of a given bookmark
+        counter: 
+        parent_folder_name: name of the folder on the bookmark bar
+        skip: list of str, folders in your bookmarks that you would like to exclude from your newsletter
+        
+    Returns:
+        results: list
+    """
     results = []
 
-    if d.get('children'):
-        name = d['name']
+    if dict_.get('children'):
+        folder_name = dict_['name']
         if counter == 1:
-            g_name = name
+            parent_folder_name = folder_name
             counter = 0
-        if name == "Bookmarks Bar":
+        if folder_name == "Bookmarks Bar":
             counter = 1
-        for i in d['children']:
-            if name not in skip:
-                r = searcher(i, name, counter, g_name, skip)
+        for i in dict_['children']:
+            if folder_name not in skip:
+                r = searcher(i, folder_name, counter, parent_folder_name, skip)
                 results.extend(r)
     else:
         results.append({
-            "bookmark_bar_parent": g_name,
-            "immediate_parent":    name,
-            # "date_modified":       d.get('date_modified'),
-            "date_added":          d['date_added'],
-            "name":                d['name'],
-            "type":                d['type'],
-            "url":                 d.get('url')
+            "bookmark_bar_parent": parent_folder_name,
+            "immediate_parent":    folder_name,
+            # "date_modified":       dict_.get('date_modified'),
+            "date_added":          dict_['date_added'],
+            "name":                dict_['name'],
+            "type":                dict_['type'],
+            "url":                 dict_.get('url')
         })
     return results
 

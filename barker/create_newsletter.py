@@ -1,10 +1,11 @@
 # -*- coding:utf-8 -*-
 """Fetches bookmark data and renders the email HTML file"""
 
-import config
 from jinja2 import Environment, FileSystemLoader
-from helpers import DataBaseInterface, fetch_newsletter_data, get_page_summary, get_upcoming_meetup_calendar_events
 
+import config
+from barker.helpers import DataBaseInterface, fetch_newsletter_data, get_page_summary, \
+    get_upcoming_meetup_calendar_events
 
 if __name__ == '__main__':
     dbi = DataBaseInterface()
