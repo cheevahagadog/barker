@@ -136,22 +136,15 @@ def get_file_time(dtms):
     """Parses a Chrome bookmark timestamp to python datetime object
     
     Args:
-        dtms: str, chrome bookmark timestamp (i.e. 13114201346955574)
+        dtms: str, chrome bookmark timestamp (i.e. '13114201346955574')
         
     Returns:
         datetime.datetime representation of timestamp (i.e. datetime.datetime(2016, 7, 28, 17, 42, 26, 955574) )
     """
-    seconds, micros = divmod(int(dtms), 1000000)
-    days, seconds = divmod(seconds, 86400)
-    return datetime.datetime(1601, 1, 1) + datetime.timedelta(days, seconds, micros)
-
-
-def transform_json_to_df(json_data):
-    """Using recursive function, flatten out the json and convert to pandas df"""
-    output = searcher(json_data, skip=config.EXCLUDE_FOLDERS)
-    df = pd.DataFrame.from_records(output)
-    df.date_added = df.date_added.apply(get_file_time)
-    return df
+    if dtms:
+        seconds, micros = divmod(int(dtms), 1000000)
+        days, seconds = divmod(seconds, 86400)
+        return datetime.datetime(1601, 1, 1) + datetime.timedelta(days, seconds, micros)
 
 
 def searcher(dict_, folder_name=None, counter=0, parent_folder_name=None, skip=[]) -> list:
@@ -184,34 +177,92 @@ def searcher(dict_, folder_name=None, counter=0, parent_folder_name=None, skip=[
         results.append({
             "bookmark_bar_parent": parent_folder_name,
             "immediate_parent":    folder_name,
-            # "date_modified":       dict_.get('date_modified'),
-            "date_added":          dict_['date_added'],
-            "name":                dict_['name'],
-            "type":                dict_['type'],
+            "date_modified":       dict_.get('date_modified'),
+            "date_added":          dict_.get('date_added'),
+            "name":                dict_.get('name'),
+            "type":                dict_.get('type'),
             "url":                 dict_.get('url')
         })
     return results
 
 
-def fetch_newsletter_data(df):
+def transform_json_to_df(json_data):
+    """Using recursive function, flatten out the json and convert to pandas df"""
+    output = searcher(json_data, skip=config.EXCLUDE_FOLDERS)
+    df = pd.DataFrame.from_records(output)
+    df.date_modified = df.date_modified.apply(get_file_time)
+    df.date_added = df.date_added.apply(get_file_time)
+    return df
+
+
+def fetch_newsletter_data(df, use_recent=False, verbose=True) -> (bool, pd.DataFrame):
     df = df[(df['bookmark_bar_parent'].isin(config.TOP_FOCUS_FOLDERS))
             | (df['immediate_parent'].isin(config.SUB_FOCUS_FOLDERS))]
     df = df[~df['url'].str.contains('|'.join(config.URL_STEMS_TO_EXCLUDE))]
-    return df.sample(config.NUM_LINKS_TO_INCLUDE)
+    if len(df) >= config.NUM_LINKS_TO_INCLUDE:
+        if use_recent:
+            df.sort_values(['date_added', 'date_modified'], ascending=[False, False], inplace=True)
+            df.reset_index(drop=True, inplace=True)
+            return True, df.ix[0:config.NUM_LINKS_TO_INCLUDE]
+        else:
+            return True, df.sample(config.NUM_LINKS_TO_INCLUDE)
+    else:
+        if verbose:
+            print("Unable to find {} bookmarks to use".format(config.NUM_LINKS_TO_INCLUDE))
+        return False, None
 
 
-def get_upcoming_meetup_calendar_events(params):
+def creating_link_info(df, verbose=True) -> dict:
+    """Creates the bookmark data so it's ready for use in the HTML template.
+    
+    Args:
+        df: pandas Dataframe of selected bookmarks
+        verbose: bool, default=True
+        
+    Returns:
+        dictionary of bookmark title: 
+    """
+    bookmark_dict = df.set_index('name')['url'].to_dict()
+    if verbose:
+        print("Summarizing bookmark pages...")
+    bookmark_dict = {k: [get_page_summary(k, v), v] for k, v in bookmark_dict.items()}
+    return bookmark_dict
+
+
+def get_upcoming_meetup_calendar_events(params, verbose=True) -> (bool, list):
     r = requests.get("http://api.meetup.com/self/calendar", params=params)
     if r.status_code == 200:
-        data = []
+        meetups = []
         for i in r.json():
             if i['group']['urlname'] not in config.DO_NOT_INCLUDE_GROUPS and i['visibility'] == 'public':
                 time = int(i['time'])/1000
                 time_obj = datetime.datetime.fromtimestamp(time)
-                data.append({
-                        "date": time_obj.strftime('%A %b %-d %-I%p:'),
-                        "group_name": i['group']['name'],
-                        "event_name": i['name'],
-                        "link": i['link']
-                })
-        return data
+                meetups.append({ "date": time_obj.strftime('%A %b %-d %-I%p:'),
+                                 "group_name": i['group']['name'],
+                                 "event_name": i['name'],
+                                 "link": i['link']})
+        if verbose:
+            print("Found {} meetups to add to the newsletter".format(len(meetups)))
+        return True, meetups
+    else:
+        return False, []
+
+
+def create_meetup_info(verbose=True) -> (bool, list):
+    """Creates meetup information ready for the HTML template.
+    
+    Args:
+        meetup_list: JSON-like list of meetup dicts
+        verbose: bool, default=True
+        
+    Returns:
+        list of meetup event data
+    """
+    params = {"state": config.STATE, "key": config.MEETUP_API_KEY, "page": 10, "order": 'time'}
+    if verbose:
+        print("Getting upcoming meetup info...")
+    success, meetup_data = get_upcoming_meetup_calendar_events(params)
+    if success:
+        return meetup_data
+    else:
+        return False, []
