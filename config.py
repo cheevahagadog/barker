@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+""" Configuration settings for how you would like barker to work for you."""
 
 import os
 import time
@@ -27,15 +28,15 @@ URL_STEMS_TO_EXCLUDE = ['http://stackoverflow.com', "https://docs.google"]
 
 
 # ---- MEETUP SETTINGS ------ #
-MEETUP_API_KEY = os.environ.get("MEETUP_API_KEY", None)
+MEETUP_API_KEY = os.environ.get("MEETUP_API_KEY")
 STATE = "UT"
 DO_NOT_INCLUDE_GROUPS = []
 
 
 # ---- EMAIL SETTINGS --------#
 EMAIL = True
-MAIL_USERNAME = os.environ.get("MAIL_USERNAME", None)
-MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD", None)
+MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
+MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
 
 
 # ---- STORAGE SETTINGS ------#
