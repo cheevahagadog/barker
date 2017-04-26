@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Collect and update the bookmark table
-python -m app.get_bookmarks
+python -m app.update_bookmarks
 
 # Create the HTML template
 python -m app.create_newsletter
