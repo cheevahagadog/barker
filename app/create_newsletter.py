@@ -7,7 +7,7 @@ import config
 from app.helpers import DataBaseInterface, fetch_newsletter_data, creating_link_info, create_meetup_info
 
 dbi = DataBaseInterface()
-env = Environment(loader=FileSystemLoader('templates'))
+env = Environment(loader=FileSystemLoader('app/templates'))
 template = env.get_template("skeleton.html")
 
 if __name__ == '__main__':
@@ -17,6 +17,6 @@ if __name__ == '__main__':
         bookmark_dict = creating_link_info(df)
         success, meetup_data = create_meetup_info()
         html = template.render(bookmark_data=bookmark_dict, page_data=config.PERSONAL_DATA, meetup_data=meetup_data)
-        with open('templates/newsletter.html', 'w') as myFile:
+        with open('app/templates/newsletter.html', 'w') as myFile:
             myFile.write(html)
             print("newsletter html updated!")
