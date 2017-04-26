@@ -19,7 +19,7 @@ PERSONAL_DATA = {
 
 # ---- BOOKMARK SETTINGS ------ #
 EXCLUDE_FOLDERS = ['Personal', 'Projects', 'Mealio', 'FrontAnalytics', "Dependency hell!", "PC Automation w/ R"]
-FOCUS_RECENT = False
+FOCUS_RECENT = True
 TOP_FOCUS_FOLDERS = ['Data Science', 'Review']
 SUB_FOCUS_FOLDERS = ['Great Blogs']
 NUM_LINKS_TO_INCLUDE = 7
