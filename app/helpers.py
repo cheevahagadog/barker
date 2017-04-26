@@ -245,6 +245,7 @@ def get_upcoming_meetup_calendar_events(params, verbose=True) -> (bool, list):
             print("Found {} meetups to add to the newsletter".format(len(meetups)))
         return True, meetups
     else:
+        print("Failed to connect to Meetup API with code: {}".format(r.status_code))
         return False, []
 
 
@@ -263,6 +264,6 @@ def create_meetup_info(verbose=True) -> (bool, list):
         print("Getting upcoming meetup info...")
     success, meetup_data = get_upcoming_meetup_calendar_events(params)
     if success:
-        return meetup_data
+        return True, meetup_data
     else:
         return False, []
