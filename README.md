@@ -29,7 +29,13 @@ integrating other browsers and email providers.
 
 I'm also currently working on adding tests. More to come on that.
 
-Once you've cloned the repo, setup the venv, and installed packages from the `requirements.txt`. 
+Once you've cloned the repo, setup the venv, and installed packages from the `requirements.txt`, Barker will need you to 
+save your email address and password in a safe location (I saved it in my `~/.bash_profile` location). If you would like
+to include your upcoming meetups on your newsletter, you will need to create an API key (free) on meetup.com and export
+it like the others. Once you have added them so they match the variables in the `config.py` file, you can run
+`source ~/.bash_profile`.
+
+To run barker, you can either run it manually with `bash bin/barker.sh` or set it up on a cron job.
 
 Contributing
 ------------
