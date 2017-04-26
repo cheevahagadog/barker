@@ -24,7 +24,12 @@ $ pip install -r requirements.txt
 
 Using Barker
 ------------
+Currently, I designed it to work with Chrome bookmarks and with a Gmail account. In the future, I would like to work on 
+integrating other browsers and email providers.
 
+I'm also currently working on adding tests. More to come on that.
+
+Once you've cloned the repo, setup the venv, and installed packages from the `requirements.txt`. 
 
 Contributing
 ------------
