@@ -13,7 +13,7 @@ if __name__ == "__main__":
     msg = MIMEMultipart('alternative')
     with codecs.open("app/templates/newsletter.html", 'r', 'utf-8') as fp:
         html = fp.read()
-        text = html2text.html2text(html)
+    text = html2text.html2text(html)
     try:
         s = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         s.login(config.MAIL_USERNAME, config.MAIL_PASSWORD)
