@@ -12,7 +12,7 @@ template = env.get_template("skeleton.html")
 
 if __name__ == '__main__':
     df = dbi.load_data_from_table('bookmarks')
-    success, df = fetch_newsletter_data(df, use_recent=config.FOCUS_RECENT)
+    success, df = fetch_newsletter_data(df, use_recent=config.USE_MOST_RECENT_BOOKMARKS)
     if success:
         bookmark_dict = creating_link_info(df)
         success, meetup_data = create_meetup_info()
