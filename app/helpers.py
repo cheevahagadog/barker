@@ -11,7 +11,7 @@ from gensim.summarization import summarize
 import datetime
 import os
 import json
-from os.path import expanduser
+# from os.path import expanduser
 
 
 class DataBaseInterface(object):
@@ -110,26 +110,32 @@ def get_page_summary(title, url, verbose=False) -> str:
         return title
 
 
-def get_bookmarks():
-    try:
-        home = expanduser("~")
-        path_to_bookmarks = "Library/Application Support/Google/Chrome/Default/Bookmarks"
-
-        # Convert the bookmark JSON to a dictionary
-        big_path = os.path.join(home, path_to_bookmarks)
-        if os.path.isfile(big_path):
-            with open(big_path) as data_file:
-                data = json.load(data_file)
-            try:
-                data = data['roots']['bookmark_bar']
-            except ValueError:
-                return "Do you have bookmarks on your bookmark bar?"
-            else:
-                return data
+def get_bookmarks() -> (bool, dict):
+    """Searches for the bookmark file path and returns a JSON of bookmark data from the Bookmarks bar location"""
+    if config.BOOKMARK_PATH:
+        full_path = config.BOOKMARK_PATH
+    else:
+        try:
+            home = os.path.expanduser("~")
+        except Exception as e:
+            print(e, "There is a problem with your path to the bookmarks")  # Maybe a windows error?
+            return False, {}
         else:
-            return "File not found at location of {}".format(big_path)
-    except:
-        return "There is a problem with your path to the bookmarks"
+            path_to_bookmarks = "Library/Application Support/Google/Chrome/Default/Bookmarks"
+            full_path = os.path.join(home, path_to_bookmarks)
+    if os.path.isfile(full_path):
+        try:
+            with open(full_path) as data_file:
+                data = json.load(data_file)
+            data = data['roots']['bookmark_bar']
+        except (ValueError, KeyError):
+            print("Unable to find bookmarks on your Bookmarks bar. Are you sure you have bookmarks on your bookmarks bar?")
+            return False, {}
+        else:
+            return True, data
+    else:
+        print("File not found at location of {}. Check path to your Chrome bookmarks.".format(full_path))
+        return False, {}
 
 
 def get_file_time(dtms):
@@ -196,10 +202,15 @@ def transform_json_to_df(json_data):
 
 
 def fetch_newsletter_data(df, use_recent=False, verbose=True) -> (bool, pd.DataFrame):
-    df = df[(df['bookmark_bar_parent'].isin(config.TOP_FOCUS_FOLDERS))
-            | (df['immediate_parent'].isin(config.SUB_FOCUS_FOLDERS))]
+    """"""
+    original_len = filtered_len = len(df)
+    if config.BOOKMARK_BAR_FOCUS_FOLDERS or config.OTHER_FOCUS_FOLDERS:
+        df = df[(df['bookmark_bar_parent'].isin(config.BOOKMARK_BAR_FOCUS_FOLDERS))
+                | (df['immediate_parent'].isin(config.OTHER_FOCUS_FOLDERS))]
+        filtered_len = len(df)
     df = df[~df['url'].str.contains('|'.join(config.URL_STEMS_TO_EXCLUDE))]
-    if len(df) >= config.NUM_LINKS_TO_INCLUDE:
+    url_filtered_len = len(df)
+    if url_filtered_len >= config.NUM_LINKS_TO_INCLUDE:
         if use_recent:
             df.sort_values(['date_added', 'date_modified'], ascending=[False, False], inplace=True)
             df.reset_index(drop=True, inplace=True)
@@ -208,7 +219,9 @@ def fetch_newsletter_data(df, use_recent=False, verbose=True) -> (bool, pd.DataF
             return True, df.sample(config.NUM_LINKS_TO_INCLUDE)
     else:
         if verbose:
-            print("Unable to find {} bookmarks to use".format(config.NUM_LINKS_TO_INCLUDE))
+            print("Of the {0} bookmarks found, {1} were removed by focus folders and {2} were removed by URL stems"
+                  .format(original_len, original_len - filtered_len, original_len - url_filtered_len))
+            print("Unable to find {} bookmarks".format(config.NUM_LINKS_TO_INCLUDE))
         return False, None
 
 
