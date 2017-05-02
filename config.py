@@ -7,14 +7,18 @@ import time
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
+# ---- FEEDBACK WHILE RUNNING -------------#
+VERBOSE = True
+
 # ---- NEWSLETTER/PERSONAL SETTINGS ------ #
 PERSONAL_DATA = {
     'NAME': "Nathan",
     'TWITTER_HANDLE': "data_cheeves",
     'WEBSITE_URL': "http://www.github.com/cheevahagadog",
     'WEBSITE_DESCRIPTION': "My weekly helpful reminder of the great things I've bookmarked.",
-    'HEADER_LOGO': "../static/img/yourlogo.png",
-    'PERSONAL_IMG': "../static/img/yourimage.jpg",
+    'EMAIL_SUBJECT': "Your weekly newsletter!",
+    'HEADER_LOGO': "http://placehold.it/350x65",  # OR "../static/img/yourlogo.png"
+    'PERSONAL_IMG': "http://placehold.it/150",  # OR "../static/img/yourimage.jpg"
     'DATE': time.strftime("%x")
 }
 

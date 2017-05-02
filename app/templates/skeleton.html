@@ -8,7 +8,7 @@
 
 <div>
 
-    <div style="text-align: center; height: 160px;"><img src="" style="height: 160px;"/></div>
+    <div style="text-align: center;"><img src="{{ page_data.HEADER_LOGO }}"/></div>
 
     <div style="max-width: 600px; margin-left: auto; margin-right: auto;">
         <br>
@@ -35,13 +35,11 @@
             <h3>Cool and interesting bookmarks</h3>
             <hr>
             {% for k, v in bookmark_data.items() %}
-{#                {% if key|reject("date", "twitter_handle", "name")|reject("date", "twitter_handle", "name") %}#}
                     <a href="{{ v[1] }}"><h4>{{ k }}</h4></a>
                     <ul style="list-style-type:disc">
                       <li>{{ v[0] }}</li>
                     </ul>
                     <hr>
-{#                {% endif %}#}
             {% endfor %}
         </div>
         <br>
@@ -61,15 +59,12 @@
 
                 <a href="https://twitter.com/{{ page_data.TWITTER_HANDLE }}"
                    style="color: #666; text-decoration: none;"><img
-                        src=""
+                        src="{{ page_data.PERSONAL_IMG }}"
                         style="height: 90px; border-radius: 5px;"/>
                 </a>
                 <div><a href="https://twitter.com/{{ page_data.TWITTER_HANDLE }}"
                         style="color: #666; text-decoration: none;">{{ page_data.NAME }}</a>
                 </div>
-{#                <div><a href=""#}
-{#                        style="color: #666; text-decoration: none;"></a>#}
-{#                </div>#}
             </div>
 
             <div>
