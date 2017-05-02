@@ -18,7 +18,18 @@ $ git clone https://github.com/cheevahagadog/barker.git
 Scripts were written using Python 3.6 and have not been tested for portability to Python 2.
 I'd recommend creating a virtual environment
 ```
-$ conda create -n venv python=3 or virtualenv venv
+$ virtualenv venv
+(OR w/ conda)
+$ conda create -n venv python=3
+```
+Then activate
+```
+$ source venv/bin/activate
+OR
+$ source activate venv
+```
+Install necessary packages
+```
 $ pip install -r requirements.txt
 ```
 
@@ -31,11 +42,13 @@ I'm also currently working on adding tests. More to come on that.
 
 Once you've cloned the repo, setup the venv, and installed packages from the `requirements.txt`, Barker will need you to 
 save your email address and password in a safe location (I saved it in my `~/.bash_profile` location). If you would like
-to include your upcoming meetups on your newsletter, you will need to create an API key (free) on meetup.com and export
-it like the others. Once you have added them so they match the variables in the `config.py` file, you can run
+to include your upcoming meetups on your newsletter, you will need to ![create an API key](https://www.meetup.com/meetup_api/) 
+(free) on meetup.com and export
+it like the others. Once you have added them so they match the variable names`` in the `config.py` file, you can run
 `source ~/.bash_profile`.
 
-To run barker, you can either run it manually with `bash bin/barker.sh` or set it up on a cron job.
+To run barker, you can either run it manually with `bash bin/barker.sh` or set it up on a cron job. Be sure to activate 
+the venv you created before running!
 
 Contributing
 ------------
