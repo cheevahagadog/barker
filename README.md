@@ -35,11 +35,6 @@ $ pip install -r requirements.txt
 
 Using Barker
 ------------
-Currently, I designed it to work with Chrome bookmarks and with a Gmail account. In the future, I would like to work on 
-integrating other browsers and email providers.
-
-I'm also currently working on adding tests. More to come on that.
-
 Once you've cloned the repo, setup the venv, and installed packages from the `requirements.txt`, Barker will need you to 
 save your email address and password in a safe location (I saved it in my `~/.bash_profile` location). If you would like
 to include your upcoming meetups on your newsletter, you will need to [create an API key](https://www.meetup.com/meetup_api/) 
@@ -49,6 +44,13 @@ it like the others. Once you have added them so they match the variable names in
 
 To run barker, you can either run it manually with `bash bin/barker.sh` or set it up on a cron job. Be sure to activate 
 the venv you created before running!
+
+TODO
+-------------------
+Currently, Barker works only with Chrome bookmarks and with a Gmail account. In the future, I would like to work on 
+integrating other browsers and email providers.  
+More complete testing suite.  
+Bash script to take user input and set variables in `config.py`
 
 Contributing
 ------------
