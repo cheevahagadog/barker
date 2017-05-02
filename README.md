@@ -47,10 +47,10 @@ the venv you created before running!
 
 TODO
 -------------------
-Currently, Barker works only with Chrome bookmarks and with a Gmail account. In the future, I would like to work on 
+ - Currently, Barker works only with Chrome bookmarks and with a Gmail account. In the future, I would like to work on 
 integrating other browsers and email providers.  
-More complete testing suite.  
-Bash script to take user input and set variables in `config.py`
+ - More complete testing suite.  
+ - Bash script to take user input and set variables in `config.py`
 
 Contributing
 ------------
