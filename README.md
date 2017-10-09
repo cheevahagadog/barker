@@ -1,7 +1,11 @@
 Barker
 ======
 
-A personal newsletter generator based on your Chrome bookmarks.
+A personal newsletter generator based on your Chrome bookmarks. Here's what it makes for me when I run it:
+
+![](https://github.com/cheevahagadog/barker/blob/master/imgs/Screen%20Shot%202017-10-05%20at%202.50.36%20PM.png)
+![](https://github.com/cheevahagadog/barker/blob/master/imgs/Screen%20Shot%202017-10-05%20at%202.50.42%20PM.png)
+![](https://github.com/cheevahagadog/barker/blob/master/imgs/Screen%20Shot%202017-10-05%20at%202.50.52%20PM.png)
 
 Motivation
 ----------
